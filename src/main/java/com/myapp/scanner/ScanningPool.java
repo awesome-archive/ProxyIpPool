@@ -1,16 +1,12 @@
 package com.myapp.scanner;
 
-import com.myapp.client.Client;
+import com.myapp.client.CrawlClient;
 import com.myapp.proxy.HttpProxy;
 import com.myapp.util.CrawerBase;
-import com.uwyn.jhighlight.tools.StringUtils;
-import org.apache.poi.util.StringUtil;
+import org.apache.log4j.Logger;
 
-import java.io.InputStream;
 import java.net.*;
 import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by gaorui on 17/4/24.
@@ -18,6 +14,7 @@ import java.util.regex.Pattern;
 public class ScanningPool {
 
     public static boolean b = true;
+    private static Logger logger = Logger.getLogger(ScanningPool.class);
 
     public static void scanningProxyIp(HttpProxy httpProxy) {
         b = false;
@@ -25,7 +22,7 @@ public class ScanningPool {
         String str = proxy.toString();
         String filterIp = str.substring(str.indexOf("/") + 1, str.indexOf(":"));
         str = str.substring(str.indexOf("/") + 1, str.indexOf(".", str.indexOf(".") + 1));
-        System.out.println("*扫描ip段ing:" + str);
+        logger.info("*扫描ip段ing:" + str);
         int a[] = {80, 8080, 3128, 8081, 9080};
         String ip;
         for (int i = 0; i < 255; i++) {
@@ -48,7 +45,8 @@ public class ScanningPool {
         try {
             url = new URL("http://www.baidu.com/");
         } catch (MalformedURLException e) {
-            System.out.println("url invalidate");
+            logger.error("url invalidate");
+            return;
         }
         InetSocketAddress addr = null;
         addr = new InetSocketAddress(ip, port);
@@ -63,12 +61,11 @@ public class ScanningPool {
             int code = conn.getResponseCode();
 
             if (code == 200) {
-                Client.proxyPool.add(ip, port);
-                System.out.println(addr.toString() + "is ok");
+                CrawlClient.proxyPool.add(ip, port);
+                logger.info(addr.toString() + "is ok");
             }
 
         } catch (Exception e) {
-            //System.out.println("ip " + ip + " is not aviable");
         }
     }
 
